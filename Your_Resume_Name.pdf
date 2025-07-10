@@ -1,0 +1,3 @@
+Make sure to change the path on on the python program.
+
+CANDIDATE_PROFILE_PDF = "Your_Resume_Name.pdf" <--------- Your actual resume.
