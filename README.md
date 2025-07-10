@@ -1,121 +1,117 @@
+# Automated Job Search & LLM Filtering Pipeline
 
-```markdown
-# LLM-Powered Job Search Pipeline
+This project is a powerful, automated job search tool that scrapes the web for relevant job postings and uses a local Large Language Model (LLM) to filter and score them based on your resume. It's designed to save you hours of manual searching by programmatically identifying the most promising opportunities.
 
-This is an automated, multi-threaded job scraping and analysis tool. It uses a list of public SearXNG instances to search for specified job titles across major Application Tracking Systems (ATS), then leverages a local Large Language Model (LLM) via Ollama to evaluate each job title against a candidate's resume for relevance.
+The pipeline uses a distributed network of public [SearXNG](https://github.com/searxng/searxng) instances for robust, decentralized web scraping, and leverages [Ollama](https://ollama.com/) to run a local LLM for intelligent, private, and free job analysis.
 
-The entire process is visualized in a live terminal dashboard.
+
+*(Image of a similar terminal-based dashboard)*
 
 ## Features
 
-- **Multi-threaded Scraping**: Uses multiple concurrent browser tabs to search for jobs quickly.
-- **Privacy-Focused**: Leverages a list of public [SearXNG](https://searx.space/) instances, avoiding direct requests to traditional search engines.
-- **Local LLM Analysis**: Utilizes a locally running LLM via [Ollama](https://ollama.com/) for job title analysis. No API keys or data sharing required.
-- **Resume-Based Filtering**: Reads a candidate's resume from a PDF to provide context for the LLM's evaluation.
-- **Live Terminal Dashboard**: Provides a real-time, color-coded view of scraper and analyzer status, overall progress, and recent LLM judgments.
-- **Highly Configurable**: Easily change job titles, target countries, performance settings, and more in the `Config` class.
-- **Detailed Output**: Generates three separate CSV files for unfiltered results, LLM-filtered matches, and a complete analysis log.
-
-## Demo
-
-Here is a preview of the live terminal dashboard in action:
-
-```
-==================== LIVE JOB PIPELINE DASHBOARD ====================
-
---- SCRAPER STATUS (8 Browser Tabs) ---
-  [Tab-1]  Status: Searching...          Query: "Quantitative Analyst" "USA"
-  [Tab-2]  Status: Searching...          Query: "Hedge Fund Analyst" "Singapore"
-  [Tab-3]  Status: Found Job (1)         Query: "M&A Analyst" "Canada"
-  [Tab-4]  Status: Searching...          Query: "Python Financial Analyst" "USA"
-  [Tab-5]  Status: Starting...
-  [Tab-6]  Status: Starting...
-  [Tab-7]  Status: Starting...
-  [Tab-8]  Status: Starting...
-
---- LLM ANALYZER STATUS (2 Workers) ---
-  [LLM-1]      Status: Analyzing Job         Task:  M&A Analyst | Goldman Sachs
-  [LLM-2]      Status: Idle
-
---- OVERALL PROGRESS ---
-  Searches Remaining: 142   | Jobs Scraped: 1     | Analysis Queue: 0     | Matches Found: 0
-
---- RECENT EVENTS (LLM Judgements) ---
-  [14:32:15] [+] Found: M&A Analyst | Goldman Sachs
-```
+-   **Multi-Threaded Scraping**: Utilizes multiple parallel browser tabs (via Selenium) to search for jobs simultaneously, dramatically speeding up the process.
+-   **Intelligent LLM Filtering**: Connects to a local Ollama instance to analyze each found job title against the content of your resume.
+-   **Live TUI Dashboard**: A clean, real-time terminal dashboard shows the status of all scraper and analyzer threads, progress, and recent LLM judgments.
+-   **Decentralized & Robust**: Queries a list of public SearXNG instances, making it resilient to any single search provider going down.
+-   **Highly Configurable**: Easily change target job titles, countries, LLM model, and performance settings in a central `Config` class.
+-   **Detailed Output**: Generates three separate CSV files: one for all scraped jobs, one for the detailed LLM analysis log, and a final, clean list of matched jobs with their scores.
+-   **Resume-Based Analysis**: Reads your qualifications directly from a PDF resume to provide tailored job matching.
 
 ## Prerequisites
 
 Before you begin, ensure you have the following installed:
-- [Python 3.8+](https://www.python.org/downloads/)
-- [Google Chrome](https://www.google.com/chrome/)
-- [Ollama](https://ollama.com/)
 
-## Installation & Setup
+1.  **Python 3.8+**
+2.  **Google Chrome** browser
+3.  **[Ollama](https://ollama.com/)**: You must have Ollama installed and running.
+4.  **An Ollama Model**: You need to have pulled a model for the analysis. The script is configured for `deepseek-r1:8b`, but you can use others. Pull the model with:
+    ```bash
+    ollama pull deepseek-r1:8b
+    ```
+
+## Setup & Installation
 
 1.  **Clone the repository:**
-    ```sh
-    git clone https://github.com/your-username/job-search-pipeline.git
-    cd job-search-pipeline
+    ```bash
+    git clone <your-repo-url>
+    cd <your-repo-name>
     ```
 
-2.  **Create a virtual environment (recommended):**
-    ```sh
+2.  **Create and activate a virtual environment (recommended):**
+    ```bash
+    # For Windows
     python -m venv venv
-    source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+    .\venv\Scripts\activate
+
+    # For macOS/Linux
+    python3 -m venv venv
+    source venv/bin/activate
     ```
 
-3.  **Install dependencies:**
-    ```sh
+3.  **Install the required packages:**
+    ```bash
     pip install -r requirements.txt
     ```
 
-4.  **Download an Ollama model:**
-    This script is configured to use `deepseek-r1:8b` by default. You can change this in the script, but make sure you have the model pulled.
-    ```sh
-    ollama pull deepseek-r1:8b
-    ```
-    Ensure the Ollama application is running in the background.
-
-5.  **Add your resume:**
-    Place your resume in the project's root directory and **rename it to `candidate_resume.pdf`**. The script will read this file to understand your profile.
-
-## Usage
-
-Once setup is complete, simply run the script from your terminal:
-
-```sh
-python job_pipeline.py
-```
-
-The live dashboard will appear. The script will run until all search queries are completed. To stop it early, press `Ctrl+C`.
-
 ## Configuration
 
-All major settings can be adjusted in the `Config` class at the top of `job_pipeline.py`:
+Before running the script, you need to configure it for your job search. Open `job_pipeline.py` and edit the `Config` class at the top of the file.
 
--   `CANDIDATE_PROFILE_PDF`: The name of your resume file.
--   `OLLAMA_MODEL`: The Ollama model to use for analysis.
--   `JOB_TITLES`: A dictionary of job titles to search for, categorized by your preference.
--   `COUNTRY_PRIORITY`: A list of countries to include in the search queries.
--   `MAX_SCRAPER_TABS` & `MAX_LLM_WORKERS`: Adjust the number of concurrent workers. More tabs may find jobs faster but will use more system resources.
--   `TARGET_JOB_SITES`: A list of ATS domains to target. Only links from these sites will be processed.
+1.  **Add Your Resume**:
+    -   Place your resume in PDF format in the root directory of the project.
+    -   Update the `CANDIDATE_PROFILE_PDF` variable to match your resume's filename.
+    ```python
+    # In job_pipeline.py
+    class Config:
+        # ...
+        CANDIDATE_PROFILE_PDF = "Your_Resume_Name.pdf"
+    ```
+
+2.  **Define Your Job Search**:
+    -   Modify the `JOB_TITLES` dictionary to include the roles you are interested in. You can change the tiers or the titles within them.
+    -   Adjust the `COUNTRY_PRIORITY` list to target specific countries.
+    ```python
+    # In job_pipeline.py
+    class Config:
+        # ...
+        JOB_TITLES = {
+            "Tier 1": ["Senior Python Developer", "Machine Learning Engineer"],
+            "Tier 2": ["Backend Developer", "Data Engineer"],
+            "Tier 3": ["Software Engineer"]
+        }
+        COUNTRY_PRIORITY = ["USA", "Canada", "United Kingdom"]
+        # ...
+    ```
+
+3.  **(Optional) Change LLM Model**:
+    -   If you are using a different Ollama model, update the `OLLAMA_MODEL` variable.
+    ```python
+    # In job_pipeline.py
+    class Config:
+        # ...
+        OLLAMA_MODEL = "llama3:8b" # or any other model you have
+    ```
+
+4.  **(Optional) Performance Tuning**:
+    -   You can adjust `MAX_SCRAPER_TABS` and `MAX_LLM_WORKERS` depending on your machine's CPU and RAM.
+
+## How to Run
+
+1.  Make sure your Ollama application is running in the background.
+2.  Execute the script from your terminal:
+    ```bash
+    python job_pipeline.py
+    ```
+3.  The live dashboard will appear. The script will run until all search queries are completed. You can stop it at any time with `Ctrl+C`.
 
 ## Output Files
 
-The script generates three files in the root directory:
+The script will generate three CSV files in the project directory:
 
-1.  **`company_list_unfiltered.csv`**: Contains every job listing found by the scrapers, regardless of relevance.
-2.  **`llm_analysis_log.csv`**: A detailed log of every judgment made by the LLM, including both matches and non-matches.
-3.  **`company_list_filtered.csv`**: The final, curated list of jobs that the LLM determined to be a good match, sorted by score. This is your primary output file.
+-   **`company_list_unfiltered.csv`**: A raw list of every job posting found that matched the target job sites.
+-   **`llm_analysis_log.csv`**: A detailed log of every job evaluated by the LLM, including its match status, score, and reasoning. This is useful for debugging the LLM's performance.
+-   **`company_list_filtered.csv`**: The final, curated list of jobs that the LLM identified as a good match, sorted by score. **This is your primary results file.**
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Disclaimer
-
-This tool is for personal and educational use. Please be respectful of the public SearXNG instances and avoid running the script with excessively high concurrency settings.
-```
-
----
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
