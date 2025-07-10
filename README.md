@@ -4,8 +4,7 @@ This project is a powerful, automated job search tool that scrapes the web for r
 
 The pipeline uses a distributed network of public [SearXNG](https://github.com/searxng/searxng) instances for robust, decentralized web scraping, and leverages [Ollama](https://ollama.com/) to run a local LLM for intelligent, private, and free job analysis.
 
-
-*(Image of a similar terminal-based dashboard)*
+<img width="1247" height="867" alt="image" src="https://github.com/user-attachments/assets/95350fb3-e1d1-4774-8cad-5a9536be26f0" />
 
 ## Features
 
