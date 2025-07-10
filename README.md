@@ -17,3 +17,24 @@ This script automates the tedious process of sifting through job boards by launc
 - **Live Console UI:** A dynamic dashboard in your terminal provides a real-time overview of scraper tabs, LLM workers, and overall progress.
 
 ### Live Dashboard Preview
+==================== LIVE JOB PIPELINE DASHBOARD ====================
+--- SCRAPER STATUS (8 Browser Tabs) ---
+[Tab-1] Status: Searching... Query: "Quantitative Analyst" "USA"
+[Tab-2] Status: Found Job (14) Query: "Hedge Fund Analyst" "Singapore"
+[Tab-3] Status: Searching... Query: "Private Equity Analyst" "Canada"
+...
+--- LLM ANALYZER STATUS (2 Workers) ---
+[LLM-1] Status: Analyzing Job Task: Analyst, Corporate Finance at MegaCorp
+[LLM-2] Status: Idle Task:
+--- OVERALL PROGRESS ---
+Searches Remaining: 12 | Jobs Scraped: 142 | Analysis Queue: 13 | Matches Found: 15
+Generated code
+## Prerequisites
+
+1.  **Python 3.8+**
+2.  **Google Chrome** browser.
+3.  **Ollama**: You must have [Ollama](https://ollama.com/) installed and running.
+
+Once Ollama is running, pull the model used by this script:
+```bash
+ollama pull deepseek-r1:8b
