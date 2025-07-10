@@ -1,0 +1,6 @@
+ollama
+selenium
+webdriver-manager
+beautifulsoup4
+PyMuPDF
+colorama
